@@ -1,9 +1,22 @@
+# 💭 Reflection: Game Glitch Investigator
+
+Answer each question in 3 to 5 sentences. Be specific and honest about what actually happened while you worked. This is about your process, not trying to sound perfect.
+
+## 1. What was broken when you started?
+
+The first time I ran the game, it loaded cleanly in the browser with a Streamlit interface: a sidebar with a difficulty selector, a main panel for guessing, and a "Developer Debug Info" expander. Nothing crashed, but the behavior was clearly wrong — the hints contradicted the outcomes, the range text didn't match the selected difficulty, and the "Attempts left" counter was already reduced before I'd made a single guess.
+
+The three bugs I noticed first were: (1) the hint messages were flipped — after a "Too High" outcome the hint said "Go HIGHER!"; (2) the info text always said "1 to 100" and "New Game" always picked from 1–100, ignoring the selected difficulty; and (3) the attempts counter started inconsistently between a fresh load and a "New Game" click, which threw off the displayed attempts-left and the score.
+
+**Bug Reproduction Log**
+
 | Input                               | Expected Behavior                                                                                                                   | Actual Behavior                                                                                                                                 | Console Output / Error |
 |-------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|
 | Make a guess higher than the secret | Outcome "Too High" and hint "Go LOWER!"                                                                                             | Outcome "Too High" but hint reads "Go HIGHER!" (messages are flipped).                                                                          | none                   |
 | Select a difficulty (e.g., Hard)    | Displayed range and new secret use the difficulty's range (e.g., Hard = 1–50).                                                      | Sidebar shows correct range, but info text says "1 to 100" and New Game picks randint(1, 100) ignoring difficulty.                              | none                   |
 | Start a game and submit guesses     | The UI shows full attempts remaining until the first submit; first submit increments attempts to 1 and scoring reflects attempt #1. | "Attempts left" counter is already reduced before any guess, and the displayed score changes that follow don't match the visible attempt count. | none                   |
 
+---
 
 ## 2. How did you use AI as a teammate?
 

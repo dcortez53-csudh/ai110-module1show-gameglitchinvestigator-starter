@@ -77,18 +77,23 @@ player wins by guessing the secret within the attempt limit.
 
 ============================= test session starts =============================
 platform linux -- Python 3.14.7, pytest-9.1.1, pluggy-1.6.0
-collected 10 items
+collected 13 items
 
-tests/test_game_logic.py::test_winning_guess PASSED                      [ 10%]
-tests/test_game_logic.py::test_guess_too_high PASSED                     [ 20%]
-tests/test_game_logic.py::test_guess_too_low PASSED                      [ 30%]
-tests/test_game_logic.py::test_parse_guess_handles_empty PASSED          [ 40%]
-tests/test_game_logic.py::test_parse_guess_handles_non_number PASSED     [ 50%]
-tests/test_game_logic.py::test_parse_guess_accepts_int PASSED            [ 60%]
-tests/test_game_logic.py::test_range_for_easy PASSED                     [ 70%]
-tests/test_game_logic.py::test_range_for_hard PASSED                     [ 80%]
-tests/test_game_logic.py::test_update_score_win_decreases_with_attempts PASSED [ 90%]
-tests/test_game_logic.py::test_update_score_too_low_loses_points PASSED  [100%]
+tests/test_game_logic.py::test_winning_guess PASSED                      [  7%]
+tests/test_game_logic.py::test_guess_too_high PASSED                     [ 15%]
+tests/test_game_logic.py::test_guess_too_low PASSED                      [ 23%]
+tests/test_game_logic.py::test_parse_guess_handles_empty PASSED          [ 30%]
+tests/test_game_logic.py::test_parse_guess_handles_non_number PASSED     [ 38%]
+tests/test_game_logic.py::test_parse_guess_accepts_int PASSED            [ 46%]
+tests/test_game_logic.py::test_range_for_easy PASSED                     [ 53%]
+tests/test_game_logic.py::test_range_for_hard PASSED                     [ 61%]
+tests/test_game_logic.py::test_update_score_win_decreases_with_attempts PASSED [ 69%]
+tests/test_game_logic.py::test_update_score_too_low_loses_points PASSED  [ 76%]
+tests/test_game_logic.py::test_parse_guess_handles_decimal PASSED        [ 84%]
+tests/test_game_logic.py::test_parse_guess_handles_negative PASSED       [ 92%]
+tests/test_game_logic.py::test_parse_guess_handles_very_large_number PASSED [100%]
+
+============================== 13 passed in 0.06s ==============================
 
 ============================== 10 passed in 0.05s ==============================
 

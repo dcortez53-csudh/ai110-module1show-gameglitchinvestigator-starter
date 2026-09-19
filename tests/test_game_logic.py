@@ -59,3 +59,23 @@ def test_update_score_win_decreases_with_attempts():
 
 def test_update_score_too_low_loses_points():
     assert update_score(50, "Too Low", 1) == 45
+
+def test_parse_guess_handles_decimal():
+    # Decimal input like "42.7" should truncate to 42, not crash.
+    ok, value, err = parse_guess("42.7")
+    assert ok
+    assert value == 42
+
+
+def test_parse_guess_handles_negative():
+    # Negative numbers parse as valid ints (below the game range).
+    ok, value, err = parse_guess("-5")
+    assert ok
+    assert value == -5
+
+
+def test_parse_guess_handles_very_large_number():
+    # Python handles arbitrary precision, so a huge int should not overflow.
+    ok, value, err = parse_guess("99999999999999999999")
+    assert ok
+    assert value == 99999999999999999999

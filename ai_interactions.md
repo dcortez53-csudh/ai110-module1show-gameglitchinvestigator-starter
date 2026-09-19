@@ -25,12 +25,11 @@
 ## Test Generation (SF7)
 
 > Document how you used AI to help generate or improve tests.
-
 | Edge Case | Prompt Used | AI-Suggested Test | Did It Pass? | Your Reasoning |
 |-----------|-------------|-------------------|--------------|----------------|
-| | | | | |
-| | | | | |
-| | | | | |
+| Decimal input "42.7" | "Generate a pytest case that verifies parse_guess handles decimal input by truncating to an int." | `test_parse_guess_handles_decimal` — asserts `parse_guess("42.7")` returns `(True, 42, None)`. | Yes | The parser uses `int(float(raw))` when a period is present, so truncation is the intended behavior. |
+| Negative input "-5" | "Generate a pytest case that verifies parse_guess handles negative numbers without crashing." | `test_parse_guess_handles_negative` — asserts `parse_guess("-5")` returns `(True, -5, None)`. | Yes | The game accepts any int; range is enforced at the game level, not in the parser. This proves the parser doesn't reject valid ints. |
+| Extremely large int "99999999999999999999" | "Generate a pytest case that verifies parse_guess handles very large integers without overflow." | `test_parse_guess_handles_very_large_number` — asserts the parsed value equals the input. | Yes | Python ints are arbitrary precision, so there's no overflow. This test documents that we rely on that. |
 
 ---
 
@@ -64,12 +63,12 @@
 
 <!-- Describe what you asked each model to do -->
 
-| | Model A | Model B |
-|-|---------|---------|
-| **Model name** | | |
-| **Response summary** | | |
-| **More Pythonic?** | | |
-| **Clearer explanation?** | | |
+|                          | Model A | Model B |
+|--------------------------|---------|---------|
+| **Model name**           |         |         |
+| **Response summary**     |         |         |
+| **More Pythonic?**       |         |         |
+| **Clearer explanation?** |         |         |
 
 **Which did you prefer and why?**
 

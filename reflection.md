@@ -1,3 +1,10 @@
+| Input                               | Expected Behavior                                                                                                                   | Actual Behavior                                                                                                                                 | Console Output / Error |
+|-------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|
+| Make a guess higher than the secret | Outcome "Too High" and hint "Go LOWER!"                                                                                             | Outcome "Too High" but hint reads "Go HIGHER!" (messages are flipped).                                                                          | none                   |
+| Select a difficulty (e.g., Hard)    | Displayed range and new secret use the difficulty's range (e.g., Hard = 1–50).                                                      | Sidebar shows correct range, but info text says "1 to 100" and New Game picks randint(1, 100) ignoring difficulty.                              | none                   |
+| Start a game and submit guesses     | The UI shows full attempts remaining until the first submit; first submit increments attempts to 1 and scoring reflects attempt #1. | "Attempts left" counter is already reduced before any guess, and the displayed score changes that follow don't match the visible attempt count. | none                   |
+
+
 ## 2. How did you use AI as a teammate?
 
 I used GitHub Copilot's chat panel inside PyCharm for this project. I attached `app.py` and `logic_utils.py` as context so the AI could see both the UI layer and the logic layer at once.

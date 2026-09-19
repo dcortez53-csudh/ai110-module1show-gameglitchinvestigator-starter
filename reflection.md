@@ -1,58 +1,33 @@
-# 💭 Reflection: Game Glitch Investigator
-
-Answer each question in 3 to 5 sentences. Be specific and honest about what actually happened while you worked. This is about your process, not trying to sound perfect.
-
-## 1. What was broken when you started?
-
-- What did the game look like the first time you ran it?
-- Answer: The first time I ran the game it loaded cleanly in the browser with a Streamlit interface: a sidebar with a difficulty selector, a main panel for guessing, and a "Developer Debug Info" expander. Nothing crashed, but the behavior was clearly wrong, the hints contradicted the outcomes, the range text didn't match the selected difficulty, and the "Attempts left" counter was already reduced before I'd made a single guess.
-
-- List at least two concrete bugs you noticed at the start  
-  (for example: "the hints were backwards").
-- Answer: The three bugs I noticed first were: (1) the hint messages were flipped, after a "Too High" outcome the hint said "Go HIGHER!"; (2) the info text always said "1 to 100" and "New Game" always picked from 1-100, ignoring the selected difficulty, and (3) the attempts counter started inconsistently between a fresh load and a "New Game" click, which threw off the displayed attempts-let and the score
-
-**Bug Reproduction Log**
-
-Document at least 3 bugs you found. Add rows as needed.
-
-| Input | Expected Behavior | Actual Behavior | Console Output / Error |
-|-------|-------------------|-----------------|------------------------|
-|make a guess higher than the secret |outcome "Too High" and hint "Go LOWER!"|outcome "Too High" but hint reads" Go HIGHER!" (messages are flipped).|none |
-|select a difficulty (e.g., Hard)|displayed range and new secret use the difficulty's range (e.g., Hard = 1-50).|sidebar shows correct range, but info text says "1 to 100" and New Game picks randint (1,100) ignoring difficulty.|none|
-|start a game and submit guesses|the UI shows full attempts remaining until the first submit; first submit increments attempts to 1 and scoring reflects attempt #1|"Attempts left" counter is already reduced before any guess, and the displayed score changes that follow don't match the visible attempt count|none|
-
----
-
 ## 2. How did you use AI as a teammate?
 
-- Which AI tools did you use on this project (for example: ChatGPT, Gemini, Copilot)?
-- Answer: I used GitHub Copilot's chat panel inside PyCharm. I attached app.py and logic_utils.py as context and asked Copilot to help summarize and explain where I noticed any bugs, walking through the specific lines of code causing each bug.
+I used GitHub Copilot's chat panel inside PyCharm for this project. I attached `app.py` and `logic_utils.py` as context so the AI could see both the UI layer and the logic layer at once.
 
-- Give one example of an AI suggestion that was correct (including what the AI suggested and how you verified the result).
-- Answer: Copilot's diagnosis of the hint-reversal bug. I asked it to explain why a guess above the scret returned a "Go HIGHER!" hint, and it pointed to 'check_guess' in 'appy.py' (lines ~36-47), where the branches for 'guess > secret' and 'guess < secret' return the correct outcome ("Too High"/"Too Low") but swap the mesages ("Go HIGHER!"/"Go LOWER!"). I verified this by opening the function, tracing the two branches by hand, and confirming that the outcome strings were correct while the emoji messages were inverted.
+One correct AI suggestion: when I asked Copilot to explain why a guess above the secret returned "Go HIGHER!", it correctly traced the bug to the `if / else` block in `check_guess`. It pointed out that the *outcome* strings ("Too High" / "Too Low") were right, but the *hint messages* underneath them were swapped. I verified this by reading the function myself and by writing a pytest case (`test_guess_too_high`) that asserts the hint contains "LOWER".
 
-- Give one example of an AI suggestion you did not accept as written (including what the AI suggested, why you rejected or changed it, and how you verified your version). It does not have to be a suggestion that was wrong: over-engineered, out of scope, harder to read, or a poor fit for this codebase all count.
-- Answer: Copilot line numbers are approximate, there would be a suggestion for a particular line of code, and the file itself would have a different number. I re-read the whole 'check_guess' function and the submit handler to locate the bugs myself then used Copilot only to confirm the logic rather than the line numbers. 
+One AI suggestion I did not accept as written: Copilot's first pass at `update_score` kept the `attempt_number + 1` term in the Win formula, which is the source of the off-by-one bug. I rejected that and used `100 - 10 * attempt_number` instead, because `attempts` already starts at 0 and increments by 1 before scoring, so adding 1 again double-counts the attempt. I verified with `test_update_score_win_decreases_with_attempts`, which confirms a first-attempt win scores higher than a fifth-attempt win.
+
 ---
 
 ## 3. Debugging and testing your fixes
 
-- How did you decide whether a bug was really fixed?
-- Describe at least one test you ran (manual or using pytest)  
-  and what it showed you about your code.
-- Did AI help you design or understand any tests? How?
+I decided a bug was fixed when both the pytest suite passed and the app behaved correctly in the browser. After refactoring into `logic_utils.py` I ran `python -m pytest tests/ -v` and all 10 tests passed. Then I ran the app and confirmed the four key behaviors: Hard shows "Range: 1 to 50", New Game picks a secret inside that range, a too-high guess says "Go LOWER!", and the "Attempts left" counter reads 8 before the first guess on Normal.
+
+One test that was especially useful was `test_guess_too_high`. It directly targets the original hint-reversal bug: it calls `check_guess(60, 50)` and asserts that the returned outcome is `"Too High"` and the message contains `"LOWER"`. That single test would have caught the bug in the original code.
+
+Copilot helped me design tests by suggesting the naming convention (`test_guess_too_high`, `test_range_for_easy`, etc.) and pointing out that I should test the tuple-return form of `check_guess` rather than the old single-string form. I reviewed each suggestion and adjusted the assertions where needed.
 
 ---
 
 ## 4. What did you learn about Streamlit and state?
 
-- How would you explain Streamlit "reruns" and session state to a friend who has never used Streamlit?
+Streamlit re-runs the entire Python script from top to bottom every time a user interacts with the page — clicking a button, typing in a text box, changing a dropdown. That is called a "rerun." A plain Python variable would be reset to its initial value on every rerun, so it cannot remember anything between clicks. `st.session_state` is a dictionary that survives reruns. Anything stored there — like the secret number, the attempt counter, or the score — persists across interactions. The original buggy code stored `attempts` as `1` at first load and `0` on New Game, which is why the "Attempts left" counter was already reduced before the first guess.
 
 ---
 
 ## 5. Looking ahead: your developer habits
 
-- What is one habit or strategy from this project that you want to reuse in future labs or projects?
-  - This could be a testing habit, a prompting strategy, or a way you used Git.
-- What is one thing you would do differently next time you work with AI on a coding task?
-- In one or two sentences, describe how this project changed the way you think about AI generated code.
+One habit or strategy from this project that I want to reuse: asking the AI to explain *why* a bug exists before asking it to fix it. When Copilot walked me through `check_guess` step by step, I understood the root cause instead of just accepting a patch. I want to keep that "explain first, then fix" pattern.
+
+One thing I would do differently next time: I would take a screenshot or write down the exact buggy behavior before asking the AI anything. A few times I had to describe the bug from memory, which made my prompts less precise and led to one wrong suggestion from the AI.
+
+How this project changed the way I think about AI-generated code: AI-generated code can look clean and even claim to be "production-ready" while having subtle logic bugs that only surface at runtime. I now treat generated code as a first draft that needs to be tested, not a finished product.
